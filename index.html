@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>BAS AI Human Activity Recognition</title>
+
+
+    <style>
+
+        /* ================================
+           GENERAL
+        ================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #eef3f8;
+            color: #172b4d;
+        }
+
+
+        /* ================================
+           HEADER
+        ================================= */
+
+        header {
+            background: #071d3b;
+            color: white;
+
+            padding: 18px 35px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow: 0 3px 10px rgba(0,0,0,0.20);
+        }
+
+        .title h1 {
+            font-size: 25px;
+        }
+
+        .title p {
+            margin-top: 5px;
+            color: #b9c9df;
+            font-size: 14px;
+        }
+
+        .status {
+            background: #123e67;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .status span {
+            color: #35d07f;
+            font-weight: bold;
+        }
+
+
+        /* ================================
+           MAIN CONTAINER
+        ================================= */
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 25px auto;
+        }
+
+
+        /* ================================
+           EXPERIMENT TITLE
+        ================================= */
+
+        .experiment-title {
+            background: white;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            margin-bottom: 20px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .experiment-title h2 {
+            color: #0b3d70;
+        }
+
+        .experiment-title p {
+            margin-top: 7px;
+            color: #607087;
+        }
+
+
+        /* ================================
+           DASHBOARD
+        ================================= */
+
+        .dashboard {
+            display: grid;
+
+            grid-template-columns:
+                1.2fr 1fr;
+
+            gap: 20px;
+        }
+
+
+        /* ================================
+           CARDS
+        ================================= */
+
+        .card {
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #0b3d70;
+        }
+
+
+        /* ================================
+           BAS CAMERA
+        ================================= */
+
+        .camera-box {
+
+            background: #020814;
+
+            height: 380px;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            position: relative;
+
+            border: 2px solid #244b70;
+        }
+
+        .camera-box video {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+
+        /* LIVE INDICATOR */
+
+        .live-indicator {
+
+            position: absolute;
+
+            top: 12px;
+            left: 12px;
+
+            background:
+                rgba(180,0,0,0.90);
+
+            color: white;
+
+            padding: 7px 12px;
+
+            border-radius: 6px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        /* AI MONITORING */
+
+        .ai-overlay {
+
+            position: absolute;
+
+            top: 12px;
+            right: 12px;
+
+            background:
+                rgba(0,30,60,0.90);
+
+            color: #65d9ff;
+
+            padding: 7px 12px;
+
+            border-radius: 6px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        /* CAMERA INFORMATION */
+
+        .camera-info {
+
+            position: absolute;
+
+            bottom: 12px;
+            left: 12px;
+
+            background:
+                rgba(0,0,0,0.70);
+
+            color: white;
+
+            padding: 8px 12px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        /* CAMERA STATUS */
+
+        .camera-status {
+
+            position: absolute;
+
+            bottom: 12px;
+            right: 12px;
+
+            background:
+                rgba(0,50,30,0.85);
+
+            color: #62e6a0;
+
+            padding: 7px 12px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+        }
+
+
+        /* ================================
+           AI STATUS
+        ================================= */
+
+        .ai-status {
+
+            margin-top: 15px;
+
+            padding: 13px;
+
+            background: #edf7ff;
+
+            border-left:
+                5px solid #1976d2;
+
+            border-radius: 6px;
+        }
+
+        .ai-status span {
+
+            color: #0b5cab;
+
+            font-weight: bold;
+        }
+
+
+        /* ================================
+           BUTTONS
+        ================================= */
+
+        button {
+
+            border: none;
+
+            padding: 11px 16px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+
+        .action-buttons {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            margin-top: 10px;
+        }
+
+
+        .action-buttons button {
+
+            background: #e7eef7;
+
+            color: #16395f;
+        }
+
+        .action-buttons button:hover {
+
+            background: #cddced;
+        }
+
+
+        .demo-btn {
+
+            background:
+                #123e67 !important;
+
+            color: white !important;
+        }
+
+
+        .reset-btn {
+
+            background:
+                #7b263a !important;
+
+            color: white !important;
+        }
+
+
+        /* ================================
+           STEP BOX
+        ================================= */
+
+        .step-box {
+
+            background: #f5f8fc;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .step-number {
+
+            font-size: 13px;
+
+            color: #64748b;
+        }
+
+
+        .current-step {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            margin-top: 5px;
+
+            color: #0b3d70;
+        }
+
+
+        .next-step {
+
+            margin-top: 8px;
+
+            color: #64748b;
+        }
+
+
+        /* ================================
+           PROGRESS
+        ================================= */
+
+        .progress-container {
+
+            margin-top: 15px;
+        }
+
+
+        .progress-bar {
+
+            width: 100%;
+
+            height: 12px;
+
+            background: #dce5ef;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+
+        .progress {
+
+            height: 100%;
+
+            width: 0%;
+
+            background: #159957;
+
+            transition:
+                width 0.5s ease;
+        }
+
+
+        /* ================================
+           ALERTS
+        ================================= */
+
+        .alert {
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            margin-top: 15px;
+
+            font-weight: bold;
+
+            display: none;
+        }
+
+
+        .success {
+
+            background: #e4f7ec;
+
+            color: #14753c;
+
+            border-left:
+                5px solid #159957;
+        }
+
+
+        .warning {
+
+            background: #fff0e0;
+
+            color: #a24a00;
+
+            border-left:
+                5px solid #f08a24;
+        }
+
+
+        .completed {
+
+            background: #e5f1ff;
+
+            color: #0b5cab;
+
+            border-left:
+                5px solid #1976d2;
+        }
+
+
+        /* ================================
+           SYSTEM INFORMATION
+        ================================= */
+
+        .system-info {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+
+        .info-box {
+
+            background: #f4f7fb;
+
+            padding: 14px;
+
+            border-radius: 8px;
+
+            text-align: center;
+        }
+
+
+        .info-box strong {
+
+            display: block;
+
+            font-size: 20px;
+
+            color: #0b3d70;
+        }
+
+
+        .info-box span {
+
+            font-size: 12px;
+
+            color: #68788d;
+        }
+
+
+        /* ================================
+           STEP INDICATORS
+        ================================= */
+
+        .step-list {
+
+            margin-top: 15px;
+        }
+
+
+        .step-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 9px;
+
+            margin-bottom: 6px;
+
+            border-radius: 7px;
+
+            background: #f5f8fc;
+
+            color: #52657d;
+
+            font-size: 14px;
+        }
+
+
+        .step-circle {
+
+            width: 26px;
+
+            height: 26px;
+
+            border-radius: 50%;
+
+            background: #d8e2ee;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        .step-item.active {
+
+            background: #e4f2ff;
+
+            color: #0b5cab;
+
+            font-weight: bold;
+        }
+
+
+        .step-item.active .step-circle {
+
+            background: #0b5cab;
+
+            color: white;
+        }
+
+
+        .step-item.done {
+
+            background: #e5f7ed;
+
+            color: #168047;
+        }
+
+
+        .step-item.done .step-circle {
+
+            background: #159957;
+
+            color: white;
+        }
+
+
+        /* ================================
+           LOG
+        ================================= */
+
+        .log-container {
+
+            margin-top: 20px;
+        }
+
+
+        .log-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        .log-table th,
+        .log-table td {
+
+            padding: 11px;
+
+            border-bottom:
+                1px solid #e1e7ef;
+
+            text-align: left;
+
+            font-size: 14px;
+        }
+
+
+        .log-table th {
+
+            background: #f2f6fa;
+
+            color: #254b73;
+        }
+
+
+        .correct {
+
+            color: #159957;
+
+            font-weight: bold;
+        }
+
+
+        .incorrect {
+
+            color: #d35400;
+
+            font-weight: bold;
+        }
+
+
+        /* ================================
+           FOOTER
+        ================================= */
+
+        footer {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #718096;
+
+            font-size: 13px;
+        }
+
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media(max-width: 900px) {
+
+            .dashboard {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .system-info {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            header {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+    <div class="title">
+
+        <h1>
+            🛰️ BAS AI Human Activity Recognition
+        </h1>
+
+        <p>
+            AI-Assisted Scientific Experiment Monitoring System
+        </p>
+
+    </div>
+
+
+    <div class="status">
+
+        ● <span>
+            ON-BOARD AI ACTIVE
+        </span>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="container">
+
+
+    <!-- EXPERIMENT TITLE -->
+
+    <div class="experiment-title">
+
+        <h2>
+            🧪 Experiment: Sample Transfer Procedure
+        </h2>
+
+        <p>
+
+            AI continuously monitors the astronaut's
+            activities and compares them with the
+            predefined experiment sequence.
+
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         DASHBOARD
+    ================================================= -->
+
+    <div class="dashboard">
+
+
+        <!-- =================================================
+             LEFT COLUMN
+        ================================================= -->
+
+        <div>
+
+
+            <!-- BAS CAMERA -->
+
+            <div class="card">
+
+                <h3>
+                    📷 BAS Astronaut Live Feed
+                </h3>
+
+
+                <div class="camera-box">
+
+
+                    <!--
+                        IMPORTANT:
+                        This is NOT the laptop webcam.
+
+                        It represents the onboard BAS camera.
+                    -->
+
+                    <video
+                        id="astronautVideo"
+                        autoplay
+                        muted
+                        loop
+                        playsinline>
+
+                        <source
+                            src="astronaut-space.mp4"
+                            type="video/mp4">
+
+                        Your browser does not
+                        support video playback.
+
+                    </video>
+
+
+                    <!-- LIVE -->
+
+                    <div class="live-indicator">
+
+                        🔴 LIVE
+
+                    </div>
+
+
+                    <!-- AI -->
+
+                    <div class="ai-overlay">
+
+                        🤖 AI MONITORING ACTIVE
+
+                    </div>
+
+
+                    <!-- CAMERA INFO -->
+
+                    <div class="camera-info">
+
+                        BAS EXPERIMENT MODULE
+                        <br>
+
+                        CAMERA: CAM-01
+                        <br>
+
+                        LOCATION: ORBITAL LAB
+
+                    </div>
+
+
+                    <!-- CAMERA STATUS -->
+
+                    <div class="camera-status">
+
+                        ● LOCAL PROCESSING
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- AI STATUS -->
+
+                <div class="ai-status">
+
+                    🤖
+                    <b>
+                        AI Activity Recognition:
+                    </b>
+
+                    <span id="detectedAction">
+
+                        Monitoring astronaut activity...
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 AI ACTIVITY SIMULATOR
+            ================================================= -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+
+                    🤖 AI Activity Recognition
+
+                </h3>
+
+
+                <p style="color:#64748b;">
+
+                    Simulate the action detected by
+                    the onboard AI from the astronaut
+                    camera feed.
+
+                </p>
+
+
+                <div class="action-buttons">
+
+
+                    <button
+                        onclick="detectAction('Pick')">
+
+                        ✋ Pick
+
+                    </button>
+
+
+                    <button
+                        onclick="detectAction('Open')">
+
+                        🔓 Open
+
+                    </button>
+
+
+                    <button
+                        onclick="detectAction('Hold')">
+
+                        ✊ Hold
+
+                    </button>
+
+
+                    <button
+                        onclick="detectAction('Move')">
+
+                        ↔️ Move
+
+                    </button>
+
+
+                    <button
+                        onclick="detectAction('Place')">
+
+                        📦 Place
+
+                    </button>
+
+
+                    <button
+                        class="demo-btn"
+                        onclick="startDemo()">
+
+                        ▶ Run Full Demo
+
+                    </button>
+
+
+                    <button
+                        class="reset-btn"
+                        onclick="resetExperiment()">
+
+                        ↻ Reset
+
+                    </button>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             RIGHT COLUMN
+        ================================================= -->
+
+        <div>
+
+
+            <!-- EXPERIMENT PROGRESS -->
+
+            <div class="card">
+
+                <h3>
+
+                    🧭 Experiment Progress
+
+                </h3>
+
+
+                <div class="step-box">
+
+
+                    <div class="step-number">
+
+                        CURRENT STEP
+
+                    </div>
+
+
+                    <div
+                        class="current-step"
+                        id="currentStep">
+
+                        Pick the sample container
+
+                    </div>
+
+
+                    <div class="next-step">
+
+                        Next:
+
+                        <b id="nextStep">
+
+                            Open the container
+
+                        </b>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- PROGRESS -->
+
+                <div class="progress-container">
+
+
+                    <div
+                        style="
+                        display:flex;
+                        justify-content:space-between;
+                        ">
+
+                        <span>
+                            Progress
+                        </span>
+
+                        <span id="progressText">
+                            0%
+                        </span>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress"
+                            id="progressBar">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SUCCESS -->
+
+                <div
+                    id="successAlert"
+                    class="alert success">
+
+                    ✅ Correct action detected.
+                    Proceed to the next experiment step.
+
+                </div>
+
+
+
+                <!-- WARNING -->
+
+                <div
+                    id="warningAlert"
+                    class="alert warning">
+
+                    ⚠️ Incorrect sequence detected!
+
+                    <br><br>
+
+                    Follow the displayed
+                    experiment procedure.
+
+                </div>
+
+
+
+                <!-- COMPLETED -->
+
+                <div
+                    id="completedAlert"
+                    class="alert completed">
+
+                    🛰️ Experiment completed successfully.
+
+                    <br><br>
+
+                    All predefined experiment
+                    steps were successfully verified.
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 STEP SEQUENCE
+            ================================================= -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+
+                    📋 Experiment Sequence
+
+                </h3>
+
+
+                <div class="step-list"
+                     id="stepList">
+
+
+                    <div
+                        class="step-item active">
+
+                        <div class="step-circle">
+                            1
+                        </div>
+
+                        Pick sample container
+
+                    </div>
+
+
+                    <div class="step-item">
+
+                        <div class="step-circle">
+                            2
+                        </div>
+
+                        Open container
+
+                    </div>
+
+
+                    <div class="step-item">
+
+                        <div class="step-circle">
+                            3
+                        </div>
+
+                        Hold sample
+
+                    </div>
+
+
+                    <div class="step-item">
+
+                        <div class="step-circle">
+                            4
+                        </div>
+
+                        Move sample
+
+                    </div>
+
+
+                    <div class="step-item">
+
+                        <div class="step-circle">
+                            5
+                        </div>
+
+                        Place sample on tray
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SYSTEM STATUS
+            ================================================= -->
+
+            <div
+                class="card"
+                style="margin-top:20px;">
+
+                <h3>
+
+                    🛰️ System Status
+
+                </h3>
+
+
+                <div class="system-info">
+
+
+                    <div class="info-box">
+
+                        <strong>
+                            LOCAL
+                        </strong>
+
+                        <span>
+                            Processing Mode
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>
+                            98%
+                        </strong>
+
+                        <span>
+                            AI Confidence
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong id="errorCount">
+
+                            0
+
+                        </strong>
+
+                        <span>
+                            Detected Errors
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         ACTIVITY LOG
+    ================================================= -->
+
+    <div
+        class="card log-container">
+
+
+        <h3>
+
+            📝 Timestamped Experiment Log
+
+        </h3>
+
+
+        <table class="log-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Time
+                    </th>
+
+                    <th>
+                        Detected Action
+                    </th>
+
+                    <th>
+                        Expected Action
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="logBody">
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    BAS AI Human Activity Recognition Prototype
+    |
+    Local / On-board Processing Simulation
+
+</footer>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+    /* ==============================================
+       EXPERIMENT STEPS
+    ============================================== */
+
+
+    const experimentSteps = [
+
+        {
+            action: "Pick",
+
+            description:
+                "Pick the sample container"
+        },
+
+
+        {
+            action: "Open",
+
+            description:
+                "Open the container"
+        },
+
+
+        {
+            action: "Hold",
+
+            description:
+                "Hold the sample"
+        },
+
+
+        {
+            action: "Move",
+
+            description:
+                "Move the sample"
+        },
+
+
+        {
+            action: "Place",
+
+            description:
+                "Place the sample on the tray"
+        }
+
+    ];
+
+
+
+    /* ==============================================
+       VARIABLES
+    ============================================== */
+
+
+    let currentStep = 0;
+
+    let errors = 0;
+
+    let demoRunning = false;
+
+    let demoTimer = null;
+
+
+
+    /* ==============================================
+       DETECT ACTIVITY
+    ============================================== */
+
+
+    function detectAction(action) {
+
+
+        /* Prevent action after completion */
+
+        if (currentStep >= experimentSteps.length) {
+
+            return;
+
+        }
+
+
+        /* Show detected action */
+
+        document.getElementById(
+            "detectedAction"
+        ).innerText =
+            action + " action detected";
+
+
+
+        /* Expected action */
+
+        const expected =
+            experimentSteps[currentStep].action;
+
+
+
+        /* ==========================================
+           CORRECT ACTION
+        ========================================== */
+
+        if (action === expected) {
+
+
+            showSuccess();
+
+
+            addLog(
+
+                action,
+
+                expected,
+
+                "CORRECT"
+
+            );
+
+
+            currentStep++;
+
+
+            updateDashboard();
+
+
+            speak(
+                "Correct step. " +
+                getNextInstruction()
+            );
+
+
+        }
+
+
+        /* ==========================================
+           WRONG ACTION
+        ========================================== */
+
+        else {
+
+
+            showWarning();
+
+
+            errors++;
+
+
+            document.getElementById(
+                "errorCount"
+            ).innerText = errors;
+
+
+            addLog(
+
+                action,
+
+                expected,
+
+                "INCORRECT"
+
+            );
+
+
+            speak(
+
+                "Warning. Incorrect action. " +
+
+                "Please perform " +
+
+                experimentSteps[
+                    currentStep
+                ].description
+
+            );
+
+        }
+
+    }
+
+
+
+    /* ==============================================
+       UPDATE DASHBOARD
+    ============================================== */
+
+
+    function updateDashboard() {
+
+
+        updateStepList();
+
+
+
+        /* Experiment completed */
+
+        if (
+            currentStep >=
+            experimentSteps.length
+        ) {
+
+
+            document.getElementById(
+                "currentStep"
+            ).innerText =
+                "Experiment Completed";
+
+
+            document.getElementById(
+                "nextStep"
+            ).innerText =
+                "All steps completed";
+
+
+            document.getElementById(
+                "progressBar"
+            ).style.width =
+                "100%";
+
+
+            document.getElementById(
+                "progressText"
+            ).innerText =
+                "100%";
+
+
+            document.getElementById(
+                "completedAlert"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "successAlert"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "warningAlert"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "detectedAction"
+            ).innerText =
+                "Experiment completed successfully";
+
+
+            return;
+
+        }
+
+
+
+        /* Current step */
+
+        document.getElementById(
+            "currentStep"
+        ).innerText =
+            experimentSteps[
+                currentStep
+            ].description;
+
+
+
+        /* Next step */
+
+        if (
+            currentStep + 1 <
+            experimentSteps.length
+        ) {
+
+
+            document.getElementById(
+                "nextStep"
+            ).innerText =
+                experimentSteps[
+                    currentStep + 1
+                ].description;
+
+
+        }
+
+        else {
+
+
+            document.getElementById(
+                "nextStep"
+            ).innerText =
+                "Complete experiment";
+
+        }
+
+
+
+        /* Progress */
+
+        const progress =
+            Math.round(
+
+                (
+                    currentStep /
+                    experimentSteps.length
+                ) * 100
+
+            );
+
+
+        document.getElementById(
+            "progressBar"
+        ).style.width =
+            progress + "%";
+
+
+        document.getElementById(
+            "progressText"
+        ).innerText =
+            progress + "%";
+
+    }
+
+
+
+    /* ==============================================
+       STEP LIST
+    ============================================== */
+
+
+    function updateStepList() {
+
+
+        const items =
+            document.querySelectorAll(
+                ".step-item"
+            );
+
+
+        items.forEach(
+
+            (item, index) => {
+
+
+                item.classList.remove(
+                    "active"
+                );
+
+
+                item.classList.remove(
+                    "done"
+                );
+
+
+                if (
+                    index <
+                    currentStep
+                ) {
+
+                    item.classList.add(
+                        "done"
+                    );
+
+                }
+
+
+                else if (
+                    index ===
+                    currentStep
+                ) {
+
+                    item.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+
+        );
+
+    }
+
+
+
+    /* ==============================================
+       SUCCESS ALERT
+    ============================================== */
+
+
+    function showSuccess() {
+
+
+        document.getElementById(
+            "successAlert"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "warningAlert"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "completedAlert"
+        ).style.display =
+            "none";
+
+    }
+
+
+
+    /* ==============================================
+       WARNING ALERT
+    ============================================== */
+
+
+    function showWarning() {
+
+
+        document.getElementById(
+            "successAlert"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "warningAlert"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "completedAlert"
+        ).style.display =
+            "none";
+
+    }
+
+
+
+    /* ==============================================
+       ADD LOG
+    ============================================== */
+
+
+    function addLog(
+
+        detected,
+        expected,
+        status
+
+    ) {
+
+
+        const table =
+            document.getElementById(
+                "logBody"
+            );
+
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        const time =
+            new Date()
+                .toLocaleTimeString();
+
+
+
+        row.innerHTML = `
+
+            <td>
+                ${time}
+            </td>
+
+
+            <td>
+                ${detected}
+            </td>
+
+
+            <td>
+                ${expected}
+            </td>
+
+
+            <td class="${
+                status === "CORRECT"
+                    ? "correct"
+                    : "incorrect"
+            }">
+
+                ${
+                    status === "CORRECT"
+                        ? "✓ Correct"
+                        : "⚠ Incorrect"
+                }
+
+            </td>
+
+        `;
+
+
+        table.prepend(row);
+
+    }
+
+
+
+    /* ==============================================
+       VOICE INSTRUCTION
+    ============================================== */
+
+
+    function speak(text) {
+
+
+        if (
+            "speechSynthesis"
+            in window
+        ) {
+
+
+            window.speechSynthesis.cancel();
+
+
+            const speech =
+                new SpeechSynthesisUtterance(
+                    text
+                );
+
+
+            speech.rate = 0.9;
+
+            speech.pitch = 1;
+
+
+            window.speechSynthesis.speak(
+                speech
+            );
+
+        }
+
+    }
+
+
+
+    /* ==============================================
+       NEXT INSTRUCTION
+    ============================================== */
+
+
+    function getNextInstruction() {
+
+
+        if (
+            currentStep >=
+            experimentSteps.length
+        ) {
+
+            return "Experiment completed.";
+
+        }
+
+
+        return (
+
+            "Next step: " +
+
+            experimentSteps[
+                currentStep
+            ].description
+
+        );
+
+    }
+
+
+
+    /* ==============================================
+       FULL AUTOMATIC DEMO
+    ============================================== */
+
+
+    function startDemo() {
+
+
+        /* Stop existing demo */
+
+        if (demoTimer) {
+
+            clearInterval(
+                demoTimer
+            );
+
+        }
+
+
+        /* Reset */
+
+        currentStep = 0;
+
+        errors = 0;
+
+        demoRunning = true;
+
+
+        document.getElementById(
+            "errorCount"
+        ).innerText = "0";
+
+
+        document.getElementById(
+            "logBody"
+        ).innerHTML = "";
+
+
+        document.getElementById(
+            "completedAlert"
+        ).style.display =
+            "none";
+
+
+        updateDashboard();
+
+
+        let i = 0;
+
+
+
+        /* Run every 2 seconds */
+
+        demoTimer =
+            setInterval(
+
+                function() {
+
+
+                    if (
+                        i >=
+                        experimentSteps.length
+                    ) {
+
+
+                        clearInterval(
+                            demoTimer
+                        );
+
+
+                        demoRunning =
+                            false;
+
+
+                        speak(
+                            "Experiment completed successfully."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    detectAction(
+
+                        experimentSteps[
+                            i
+                        ].action
+
+                    );
+
+
+                    i++;
+
+
+                },
+
+                2000
+
+            );
+
+    }
+
+
+
+    /* ==============================================
+       RESET EXPERIMENT
+    ============================================== */
+
+
+    function resetExperiment() {
+
+
+        if (demoTimer) {
+
+            clearInterval(
+                demoTimer
+            );
+
+        }
+
+
+        currentStep = 0;
+
+        errors = 0;
+
+        demoRunning = false;
+
+
+        document.getElementById(
+            "errorCount"
+        ).innerText =
+            "0";
+
+
+        document.getElementById(
+            "logBody"
+        ).innerHTML =
+            "";
+
+
+        document.getElementById(
+            "detectedAction"
+        ).innerText =
+            "Monitoring astronaut activity...";
+
+
+        document.getElementById(
+            "successAlert"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "warningAlert"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "completedAlert"
+        ).style.display =
+            "none";
+
+
+        updateDashboard();
+
+    }
+
+
+
+    /* ==============================================
+       STARTUP
+    ============================================== */
+
+    updateDashboard();
+
+
+
+    /* ==============================================
+       ASTRONAUT VIDEO
+    ============================================== */
+
+    const astronautVideo =
+        document.getElementById(
+            "astronautVideo"
+        );
+
+
+    astronautVideo.addEventListener(
+        "loadeddata",
+        function() {
+
+            console.log(
+                "BAS astronaut camera feed loaded."
+            );
+
+        }
+    );
+
+
+    astronautVideo.addEventListener(
+        "error",
+        function() {
+
+            document.getElementById(
+                "detectedAction"
+            ).innerText =
+                "Astronaut video not found. Add astronaut-space.mp4.";
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
